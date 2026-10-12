@@ -1,0 +1,96 @@
+# Plan on pull requests (shown in the run summary), apply on merge to main.
+# One apply at a time: the state in R2 has no lock, so the concurrency group
+# is the lock.
+name: terraform
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: '1'
+  TF_INPUT: '0'
+  # Cloudflare provider + R2 state
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+  AWS_ENDPOINT_URL_S3: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+  AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+  # Infisical provider (writes tunnel tokens)
+  TF_VAR_infisical_project_id: ${{ vars.INFISICAL_PROJECT_ID }}
+  INFISICAL_AUTH_METHOD: universal
+  INFISICAL_UNIVERSAL_AUTH_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+  INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [zero-trust/tunnel]
+    defaults:
+      run:
+        working-directory: ${{ matrix.workspace }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      - name: fmt
+        run: terraform fmt -check -recursive -diff
+      - name: init
+        run: terraform init
+      - name: validate
+        run: terraform validate
+      - name: test (mocked providers)
+        run: terraform test
+      - name: plan
+        env:
+          WS: ${{ matrix.workspace }}
+        run: |
+          set -euo pipefail
+          terraform plan -lock=false -out=tfplan
+          {
+            echo "## Plan: \`${WS}\`"
+            echo '```'
+            terraform show -no-color tfplan | tail -c 60000
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  apply:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: terraform-apply
+      cancel-in-progress: false
+    strategy:
+      max-parallel: 1
+      matrix:
+        workspace: [zero-trust/tunnel]
+    defaults:
+      run:
+        working-directory: ${{ matrix.workspace }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      - name: init
+        run: terraform init
+      - name: apply
+        run: terraform apply -lock=false -auto-approve

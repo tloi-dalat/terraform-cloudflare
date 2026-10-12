@@ -1,0 +1,34 @@
+# Tunnel run by the dev cluster: control-plane/clusters/development/cloudflared/tunnel.
+# The file name is the tunnel name.
+#
+# Every hostname below gets a proxied DNS record pointing at this tunnel.
+# Rules match top to bottom (paths are regexes); unmatched requests get a 404.
+# Services are in-cluster: http://<service>.<namespace>.svc.cluster.local:<port>
+
+# Where Terraform writes the tunnel token for the cluster (Infisical folder).
+infisical:
+  environment: development
+  path: /cloudflared
+
+ingress:
+  # --- argocd -----------------------------------------------------------------
+  # GitHub push webhook only; the payload is checked against
+  # webhook.github.secret in argocd-secret.
+  - hostname: argocd-hook.tloi.shop
+    path: ^/api/webhook$
+    service: https://argocd-server.argocd.svc.cluster.local:443
+    origin_request:
+      no_tls_verify: true # argocd-server's self-signed in-cluster cert
+
+  # --- online-judge -----------------------------------------------------------
+  - hostname: oj.tloi.shop
+    path: ^/event/ # browser websocket
+    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
+  - hostname: oj.tloi.shop
+    path: ^/channels/ # long-poll fallback; the daemon needs the prefix
+    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
+  - hostname: oj.tloi.shop
+    path: ^/(martor|pdf|submission_file|static-upload)/ # user uploads
+    service: http://online-judge-media.online-judge.svc.cluster.local:8080
+  - hostname: oj.tloi.shop
+    service: http://online-judge-site.online-judge.svc.cluster.local:8000
