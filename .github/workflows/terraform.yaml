@@ -88,18 +88,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           WS: ${{ matrix.workspace }}
           PR: ${{ github.event.pull_request.number }}
-          SHA: ${{ github.event.pull_request.head.sha }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          FMT: ${{ steps.fmt.outcome }}
-          INIT: ${{ steps.init.outcome }}
-          VALIDATE: ${{ steps.validate.outcome }}
-          TEST: ${{ steps.test.outcome }}
-          PLAN: ${{ steps.plan.outcome }}
           PLAN_EXIT: ${{ steps.plan.outputs.exitcode }}
         run: |
           set -euo pipefail
           marker="<!-- terraform-plan:${WS} -->"
-          icon() { [[ "$1" == success ]] && echo "✅" || { [[ "$1" == skipped ]] && echo "⏭️" || echo "❌"; }; }
 
           summary="Plan not run"
           if [[ -f "$RUNNER_TEMP/plan.txt" ]]; then
@@ -114,12 +106,8 @@ jobs:
             echo "$marker"
             echo "### Terraform \`${WS}\`: ${summary}"
             echo
-            echo "| fmt | init | validate | test | plan |"
-            echo "|:-:|:-:|:-:|:-:|:-:|"
-            echo "| $(icon "$FMT") | $(icon "$INIT") | $(icon "$VALIDATE") | $(icon "$TEST") | $(icon "$PLAN") |"
-            echo
             if [[ -f "$RUNNER_TEMP/plan.txt" ]]; then
-              echo "<details$([[ "$PLAN_EXIT" != 0 ]] && echo ' open')><summary>Plan output</summary>"
+              echo "<details><summary>Plan output</summary>"
               echo
               echo '```hcl'
               # GitHub comments max out at 65536 characters.
@@ -133,9 +121,7 @@ jobs:
               echo '```'
               echo
               echo "</details>"
-              echo
             fi
-            echo "Commit \`${SHA:0:7}\` · [run log](${RUN_URL}) · merge to apply"
           } > "$RUNNER_TEMP/comment.md"
 
           cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
