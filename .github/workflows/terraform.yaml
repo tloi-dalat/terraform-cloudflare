@@ -1,4 +1,5 @@
-# Plan on pull requests (shown in the run summary), apply on merge to main.
+# Plan on pull requests (posted as a PR comment, updated on every push),
+# apply on merge to main.
 # One apply at a time: the state in R2 has no lock, so the concurrency group
 # is the lock.
 name: terraform
@@ -31,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write   # the plan comment
     strategy:
       fail-fast: false
       matrix:
@@ -47,25 +49,106 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
       - name: fmt
+        id: fmt
         run: terraform fmt -check -recursive -diff
+      # Keep going after a failed check so the comment shows every result;
+      # the job still fails if any of them did.
       - name: init
-        run: terraform init
+        id: init
+        if: always()
+        run: terraform init -no-color
       - name: validate
-        run: terraform validate
+        id: validate
+        if: always() && steps.init.outcome == 'success'
+        run: terraform validate -no-color
       - name: test (mocked providers)
-        run: terraform test
+        id: test
+        if: always() && steps.init.outcome == 'success'
+        run: terraform test -no-color
       - name: plan
+        id: plan
+        if: always() && steps.init.outcome == 'success'
+        run: |
+          set -o pipefail
+          # -detailed-exitcode: 0 = no changes, 1 = error, 2 = changes
+          code=0
+          terraform plan -lock=false -no-color -detailed-exitcode -out=tfplan 2>&1 | tee "$RUNNER_TEMP/plan.log" || code=$?
+          if [[ $code == 2 || $code == 0 ]]; then
+            terraform show -no-color tfplan > "$RUNNER_TEMP/plan.txt"
+          else
+            cp "$RUNNER_TEMP/plan.log" "$RUNNER_TEMP/plan.txt"
+          fi
+          echo "exitcode=$code" >> "$GITHUB_OUTPUT"
+          [[ $code != 1 ]]
+
+      # One comment per workspace, updated in place on every push to the PR.
+      - name: comment the plan on the PR
+        if: always()
         env:
+          GH_TOKEN: ${{ github.token }}
           WS: ${{ matrix.workspace }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FMT: ${{ steps.fmt.outcome }}
+          INIT: ${{ steps.init.outcome }}
+          VALIDATE: ${{ steps.validate.outcome }}
+          TEST: ${{ steps.test.outcome }}
+          PLAN: ${{ steps.plan.outcome }}
+          PLAN_EXIT: ${{ steps.plan.outputs.exitcode }}
         run: |
           set -euo pipefail
-          terraform plan -lock=false -out=tfplan
+          marker="<!-- terraform-plan:${WS} -->"
+          icon() { [[ "$1" == success ]] && echo "✅" || { [[ "$1" == skipped ]] && echo "⏭️" || echo "❌"; }; }
+
+          summary="Plan not run"
+          if [[ -f "$RUNNER_TEMP/plan.txt" ]]; then
+            case "$PLAN_EXIT" in
+              0) summary="No changes." ;;
+              2) summary=$(grep -E '^Plan: ' "$RUNNER_TEMP/plan.txt" | tail -1 || echo "Changes present") ;;
+              *) summary="Plan failed" ;;
+            esac
+          fi
+
           {
-            echo "## Plan: \`${WS}\`"
-            echo '```'
-            terraform show -no-color tfplan | tail -c 60000
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+            echo "$marker"
+            echo "### Terraform \`${WS}\`: ${summary}"
+            echo
+            echo "| fmt | init | validate | test | plan |"
+            echo "|:-:|:-:|:-:|:-:|:-:|"
+            echo "| $(icon "$FMT") | $(icon "$INIT") | $(icon "$VALIDATE") | $(icon "$TEST") | $(icon "$PLAN") |"
+            echo
+            if [[ -f "$RUNNER_TEMP/plan.txt" ]]; then
+              echo "<details$([[ "$PLAN_EXIT" != 0 ]] && echo ' open')><summary>Plan output</summary>"
+              echo
+              echo '```hcl'
+              # GitHub comments max out at 65536 characters.
+              if [[ $(wc -c < "$RUNNER_TEMP/plan.txt") -gt 60000 ]]; then
+                head -c 60000 "$RUNNER_TEMP/plan.txt"
+                echo
+                echo "… truncated, full plan in the run log"
+              else
+                cat "$RUNNER_TEMP/plan.txt"
+              fi
+              echo '```'
+              echo
+              echo "</details>"
+              echo
+            fi
+            echo "Commit \`${SHA:0:7}\` · [run log](${RUN_URL}) · merge to apply"
+          } > "$RUNNER_TEMP/comment.md"
+
+          cat "$RUNNER_TEMP/comment.md" >> "$GITHUB_STEP_SUMMARY"
+
+          existing=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" --paginate \
+                       --jq ".[] | select(.body | startswith(\"${marker}\")) | .id" | head -n1)
+          if [[ -n "$existing" ]]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" \
+              -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+              -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          fi
 
   apply:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'

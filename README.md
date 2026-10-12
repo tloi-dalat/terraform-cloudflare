@@ -3,7 +3,7 @@
 Cloudflare for every TLOI cluster, as code: tunnels, their routes, and the DNS
 records that point at them.
 
-A pull request shows the plan in its run summary; merging to `main` applies it.
+A pull request gets a comment with the plan (updated on every push); merging to `main` applies it.
 Nobody runs `cloudflared tunnel …` by hand.
 
 ```
