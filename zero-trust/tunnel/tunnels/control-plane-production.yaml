@@ -1,52 +1,33 @@
-# Tunnel run by the production cluster: control-plane/clusters/production/cloudflared/tunnel.
-# The file name is the tunnel name.
-#
-# Every hostname below gets a proxied DNS record pointing at this tunnel.
-# Rules match top to bottom (paths are regexes); unmatched requests get a 404.
-# Services are in-cluster: http://<service>.<namespace>.svc.cluster.local:<port>
-#
-# oj.tloi.vn moved here from the old stack's tunnel at cutover: its old DNS
-# record had to be deleted right before this apply, or it fails on the
-# existing record. oj-k8s.tloi.vn (the rehearsal hostname) goes once the
-# cutover has settled.
-
-# Where Terraform writes the tunnel token for the cluster (Infisical folder).
 infisical:
   environment: production
   path: /cloudflared
 
 ingress:
-  # --- argocd -----------------------------------------------------------------
-  # GitHub push webhook only; the payload is checked against
-  # webhook.github.secret in argocd-secret (control-plane's
-  # bootstrap/production/README.md, "ArgoCD webhook").
   - hostname: argocd-hook.tloi.vn
     path: ^/api/webhook$
     service: https://argocd-server.argocd.svc.cluster.local:443
     origin_request:
-      no_tls_verify: true # argocd-server's self-signed in-cluster cert
+      no_tls_verify: true
 
-  # --- online-judge -----------------------------------------------------------
   - hostname: oj.tloi.vn
-    path: ^/event/ # browser websocket
+    path: ^/event/
     service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
   - hostname: oj.tloi.vn
-    path: ^/channels/ # long-poll fallback; the daemon needs the prefix
+    path: ^/channels/
     service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
   - hostname: oj.tloi.vn
-    path: ^/(martor|pdf|submission_file|static-upload)/ # user uploads
+    path: ^/(martor|pdf|submission_file|static-upload)/
     service: http://online-judge-media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.vn
     service: http://online-judge-site.online-judge.svc.cluster.local:8000
-  # rehearsal hostname, kept until the cutover has settled
   - hostname: oj-k8s.tloi.vn
-    path: ^/event/ # browser websocket
+    path: ^/event/
     service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
   - hostname: oj-k8s.tloi.vn
-    path: ^/channels/ # long-poll fallback; the daemon needs the prefix
+    path: ^/channels/
     service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
   - hostname: oj-k8s.tloi.vn
-    path: ^/(martor|pdf|submission_file|static-upload)/ # user uploads
+    path: ^/(martor|pdf|submission_file|static-upload)/
     service: http://online-judge-media.online-judge.svc.cluster.local:8080
   - hostname: oj-k8s.tloi.vn
     service: http://online-judge-site.online-judge.svc.cluster.local:8000

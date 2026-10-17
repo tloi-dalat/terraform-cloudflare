@@ -1,5 +1,3 @@
-# Remotely-managed tunnels: the routes live in Cloudflare, so the cluster's
-# cloudflared needs nothing but the tunnel token.
 resource "cloudflare_zero_trust_tunnel_cloudflared" "this" {
   for_each = local.tunnels
 
@@ -15,7 +13,6 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "this" {
   tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.this[each.key].id
 
   config = {
-    # Rules match top to bottom; anything unmatched gets a 404.
     ingress = concat(
       [
         for rule in each.value.ingress : {
@@ -46,7 +43,7 @@ resource "cloudflare_dns_record" "this" {
   type    = "CNAME"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.this[each.value.tunnel].id}.cfargotunnel.com"
   proxied = true
-  ttl     = 1 # automatic (required for proxied records)
+  ttl     = 1
   comment = "Tunnel ${each.value.tunnel}. Managed by tloi-dalat/terraform-cloudflare"
 
   lifecycle {
@@ -57,7 +54,6 @@ resource "cloudflare_dns_record" "this" {
   }
 }
 
-# Hand the token to the cluster: Infisical → operator → Secret → cloudflared.
 data "cloudflare_zero_trust_tunnel_cloudflared_token" "this" {
   for_each = local.tunnels
 

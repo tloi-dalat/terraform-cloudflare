@@ -1,5 +1,3 @@
-# `terraform test`: plans every tunnels/*.yaml against mocked providers, so a
-# broken file fails the PR before it reaches Cloudflare. No credentials used.
 mock_provider "cloudflare" {
   mock_data "cloudflare_zone" {
     defaults = { id = "0123456789abcdef0123456789abcdef" }
