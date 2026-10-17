@@ -16,6 +16,16 @@ infisical:
   path: /cloudflared
 
 ingress:
+  # --- argocd -----------------------------------------------------------------
+  # GitHub push webhook only; the payload is checked against
+  # webhook.github.secret in argocd-secret (control-plane's
+  # bootstrap/production/README.md, "ArgoCD webhook").
+  - hostname: argocd-hook.tloi.vn
+    path: ^/api/webhook$
+    service: https://argocd-server.argocd.svc.cluster.local:443
+    origin_request:
+      no_tls_verify: true # argocd-server's self-signed in-cluster cert
+
   # --- online-judge -----------------------------------------------------------
   - hostname: oj.tloi.vn
     path: ^/event/ # browser websocket
