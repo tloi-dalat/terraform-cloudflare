@@ -20,14 +20,3 @@ ingress:
     service: http://online-judge-media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.vn
     service: http://online-judge-site.online-judge.svc.cluster.local:8000
-  - hostname: oj-k8s.tloi.vn
-    path: ^/event/
-    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
-  - hostname: oj-k8s.tloi.vn
-    path: ^/channels/
-    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
-  - hostname: oj-k8s.tloi.vn
-    path: ^/(martor|pdf|submission_file|static-upload)/
-    service: http://online-judge-media.online-judge.svc.cluster.local:8080
-  - hostname: oj-k8s.tloi.vn
-    service: http://online-judge-site.online-judge.svc.cluster.local:8000
