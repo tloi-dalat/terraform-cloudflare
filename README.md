@@ -24,7 +24,7 @@ ingress:
 
 Open a PR, read the plan, merge. The DNS record is created and the route goes
 live without restarting anything in the cluster. A hostname must be under one
-of the zones in `variables.tf` (`tloi.shop`); add new domains there.
+of the zones in `variables.tf` (`tloi.shop`, `tloi.vn`); add new domains there, and give the Cloudflare API token DNS edit on them.
 
 Rule fields: `hostname`, `service`, optional `path` (a regex) and
 `origin_request` (Cloudflare's origin settings, e.g. `no_tls_verify: true`).

@@ -11,5 +11,5 @@ variable "infisical_project_id" {
 variable "zones" {
   description = "Cloudflare zones (domains) that tunnel hostnames may live under"
   type        = list(string)
-  default     = ["tloi.shop"]
+  default     = ["tloi.shop", "tloi.vn"]
 }
