@@ -1,0 +1,30 @@
+# Tunnel run by the production cluster: control-plane/clusters/production/cloudflared/tunnel.
+# The file name is the tunnel name.
+#
+# Every hostname below gets a proxied DNS record pointing at this tunnel.
+# Rules match top to bottom (paths are regexes); unmatched requests get a 404.
+# Services are in-cluster: http://<service>.<namespace>.svc.cluster.local:<port>
+#
+# REHEARSAL: only oj-k8s.tloi.vn, while the old stack's own tunnel still serves
+# oj.tloi.vn. CUTOVER: copy the four rules with hostname oj.tloi.vn (and delete
+# the old oj.tloi.vn DNS record right before that apply, or it fails on the
+# existing record). After cutover, remove the oj-k8s rules.
+
+# Where Terraform writes the tunnel token for the cluster (Infisical folder).
+infisical:
+  environment: production
+  path: /cloudflared
+
+ingress:
+  # --- online-judge -----------------------------------------------------------
+  - hostname: oj-k8s.tloi.vn
+    path: ^/event/ # browser websocket
+    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
+  - hostname: oj-k8s.tloi.vn
+    path: ^/channels/ # long-poll fallback; the daemon needs the prefix
+    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
+  - hostname: oj-k8s.tloi.vn
+    path: ^/(martor|pdf|submission_file|static-upload)/ # user uploads
+    service: http://online-judge-media.online-judge.svc.cluster.local:8080
+  - hostname: oj-k8s.tloi.vn
+    service: http://online-judge-site.online-judge.svc.cluster.local:8000
