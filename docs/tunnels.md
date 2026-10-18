@@ -24,6 +24,19 @@ ingress:
 - Every hostname gets one proxied CNAME to its tunnel. It must be under exactly one zone in `variables.tf`
   (`tloi.shop`, `tloi.vn`), and appear in only one tunnel file.
 
+## Access
+
+```yaml
+access:
+  sqllab.tloi.vn:
+    emails: [someone@example.com]
+```
+
+A hostname under `access:` gets a Cloudflare Access application that lets in only those emails (login by one-time
+PIN, or any login method enabled in Zero Trust → Settings → Authentication). Its ingress rules also get
+`origin_request.access`, so the tunnel drops requests without a valid Access token for that application. The
+hostname needs at least one ingress rule in the same file.
+
 ## Add a hostname
 
 Add its rules, open a PR, read the plan comment, merge. The route goes live without restarting anything.

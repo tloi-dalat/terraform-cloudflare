@@ -2,6 +2,12 @@ infisical:
   environment: development
   path: /cloudflared
 
+access:
+  sqllab.tloi.shop:
+    emails:
+      - minhquandinhcao@gmail.com
+      - ntson.1303@gmail.com
+
 ingress:
   - hostname: argocd-hook.tloi.shop
     path: ^/api/webhook$
@@ -20,3 +26,6 @@ ingress:
     service: http://online-judge-media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.shop
     service: http://online-judge-site.online-judge.svc.cluster.local:8000
+
+  - hostname: sqllab.tloi.shop
+    service: http://dbgate.sqllab.svc.cluster.local:3000

@@ -16,10 +16,22 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "this" {
     ingress = concat(
       [
         for rule in each.value.ingress : {
-          hostname       = rule.hostname
-          path           = try(rule.path, null)
-          service        = rule.service
-          origin_request = try(rule.origin_request, null)
+          hostname = rule.hostname
+          path     = try(rule.path, null)
+          service  = rule.service
+          origin_request = (
+            contains(keys(local.access), rule.hostname) || can(rule.origin_request)
+            ? merge(try(rule.origin_request, {}), [
+              for host in [rule.hostname] : {
+                access = {
+                  required  = true
+                  team_name = local.team_name
+                  aud_tag   = [cloudflare_zero_trust_access_application.this[host].aud]
+                }
+              } if contains(keys(local.access), host)
+            ]...)
+            : null
+          )
         }
       ],
       [{ service = "http_status:404" }],
