@@ -14,4 +14,12 @@ locals {
     ]
   ])
   hostnames = { for h in local.hostname_list : h.hostname => h }
+
+  access = merge([
+    for tunnel, cfg in local.tunnels : {
+      for host, a in try(cfg.access, {}) : host => merge(a, { tunnel = tunnel })
+    }
+  ]...)
+
+  team_name = trimsuffix(data.cloudflare_zero_trust_organization.this.auth_domain, ".cloudflareaccess.com")
 }
