@@ -4,7 +4,9 @@ infisical:
 
 access:
   sqllab.tloi.shop:
-    emails: [minhquandinhcao@gmail.com]
+    emails:
+      - minhquandinhcao@gmail.com
+      - ntson.1303@gmail.com
 
 ingress:
   - hostname: argocd-hook.tloi.shop
