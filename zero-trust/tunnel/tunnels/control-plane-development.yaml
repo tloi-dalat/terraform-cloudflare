@@ -4,14 +4,19 @@ infisical:
 
 access:
   sqllab.tloi.shop:
-    emails:
-      - minhquandinhcao@gmail.com
-      - ntson.1303@gmail.com
-      - tahoangphuc111@gmail.com
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
+  argocd.tloi.shop:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
 
 ingress:
   - hostname: argocd-hook.tloi.shop
     path: ^/api/webhook$
+    service: https://argocd-server.argocd.svc.cluster.local:443
+    origin_request:
+      no_tls_verify: true
+  - hostname: argocd.tloi.shop
     service: https://argocd-server.argocd.svc.cluster.local:443
     origin_request:
       no_tls_verify: true

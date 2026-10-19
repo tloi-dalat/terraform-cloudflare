@@ -16,6 +16,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
   TF_VAR_infisical_project_id: ${{ vars.INFISICAL_PROJECT_ID }}
+  TF_VAR_github_client_id: ${{ vars.ACCESS_GITHUB_CLIENT_ID }}
+  TF_VAR_github_client_secret: ${{ secrets.ACCESS_GITHUB_CLIENT_SECRET }}
   INFISICAL_AUTH_METHOD: universal
   INFISICAL_UNIVERSAL_AUTH_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
   INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}

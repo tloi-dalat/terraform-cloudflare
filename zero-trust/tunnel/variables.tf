@@ -13,3 +13,14 @@ variable "zones" {
   type        = list(string)
   default     = ["tloi.shop", "tloi.vn"]
 }
+
+variable "github_client_id" {
+  description = "GitHub OAuth App client ID for the Access login method (TF_VAR_github_client_id)"
+  type        = string
+}
+
+variable "github_client_secret" {
+  description = "GitHub OAuth App client secret (TF_VAR_github_client_secret)"
+  type        = string
+  sensitive   = true
+}
