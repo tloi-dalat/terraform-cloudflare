@@ -7,6 +7,7 @@ access:
     emails:
       - minhquandinhcao@gmail.com
       - ntson.1303@gmail.com
+      - tahoangphuc111@gmail.com
 
 ingress:
   - hostname: argocd-hook.tloi.shop
