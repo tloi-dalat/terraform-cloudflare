@@ -14,6 +14,9 @@ mock_provider "cloudflare" {
   mock_resource "cloudflare_zero_trust_access_policy" {
     defaults = { id = "mock-policy" }
   }
+  mock_resource "cloudflare_zero_trust_access_identity_provider" {
+    defaults = { id = "mock-github" }
+  }
   mock_resource "cloudflare_zero_trust_tunnel_cloudflared" {
     defaults = { id = "00000000-0000-0000-0000-000000000000" }
   }
@@ -24,6 +27,8 @@ mock_provider "infisical" {}
 variables {
   cloudflare_account_id = "mock-account"
   infisical_project_id  = "mock-project"
+  github_client_id      = "mock-client"
+  github_client_secret  = "mock-secret"
 }
 
 run "every_tunnel_file_plans" {
@@ -59,5 +64,21 @@ run "access_hostnames_require_an_access_token" {
   assert {
     condition     = length(cloudflare_zero_trust_access_application.this) == length(local.access)
     error_message = "Every access entry needs an Access application."
+  }
+}
+
+run "github_teams_become_organization_rules" {
+  command = plan
+
+  assert {
+    condition = alltrue(flatten([
+      for host, a in local.access : [
+        for t in try(a.github_teams, []) : contains(
+          [for r in cloudflare_zero_trust_access_policy.this[host].include : "${r.github_organization.name}/${r.github_organization.team}" if r.github_organization != null],
+          t
+        )
+      ]
+    ]))
+    error_message = "Every github_teams entry must become a github_organization include rule."
   }
 }
