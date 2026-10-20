@@ -39,7 +39,8 @@ hostname needs at least one ingress rule in the same file.
 
 ## Add a hostname
 
-Add its rules, open a PR, read the plan comment, merge. The route goes live without restarting anything.
+Add its rules, open a PR, comment `atlantis plan`, get an `sre` approval, comment `atlantis apply`. The route goes live
+without restarting anything.
 
 If the hostname already has a DNS record (for example, pointing at an old server), the apply fails on it. Delete
 that record in Cloudflare right before merging.

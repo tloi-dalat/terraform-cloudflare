@@ -5,7 +5,6 @@ infisical:
 access:
   atlantis.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/SRE]
 
 ingress:
   - hostname: argocd-hook.tloi.vn

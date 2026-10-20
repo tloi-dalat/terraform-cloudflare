@@ -1,0 +1,6 @@
+version: 3
+automerge: true
+projects:
+  - name: tunnel
+    dir: zero-trust/tunnel
+    terraform_version: v1.16.5
