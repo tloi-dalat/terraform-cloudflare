@@ -3,6 +3,9 @@ infisical:
   path: /cloudflared
 
 access:
+  oj.tloi.shop:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
   sqllab.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/sre, tloi-dalat/swe]
