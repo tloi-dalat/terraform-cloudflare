@@ -5,13 +5,13 @@ infisical:
 access:
   oj.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
   sqllab.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
   argocd.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/sre, tloi-dalat/swe]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 ingress:
   - hostname: argocd-hook.tloi.shop
