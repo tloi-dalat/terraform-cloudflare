@@ -1,14 +1,15 @@
-name: terraform
+name: 'check'
 on:
   pull_request:
     branches: [main]
 
 concurrency:
-  group: terraform-${{ github.head_ref }}
+  group: ci-check-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
+  terraform:
+    name: check-terraform
     permissions:
       contents: read
     uses: tloi-dalat/reusable-workflow/.github/workflows/terraform-check.yaml@main
