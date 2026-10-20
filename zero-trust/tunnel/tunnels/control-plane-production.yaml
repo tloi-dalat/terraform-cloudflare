@@ -2,12 +2,23 @@ infisical:
   environment: production
   path: /cloudflared
 
+access:
+  atlantis.tloi.vn:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE]
+
 ingress:
   - hostname: argocd-hook.tloi.vn
     path: ^/api/webhook$
     service: https://argocd-server.argocd.svc.cluster.local:443
     origin_request:
       no_tls_verify: true
+
+  - hostname: atlantis-hook.tloi.vn
+    path: ^/events$
+    service: http://atlantis.platform.svc.cluster.local:80
+  - hostname: atlantis.tloi.vn
+    service: http://atlantis.platform.svc.cluster.local:80
 
   - hostname: oj.tloi.vn
     path: ^/event/
