@@ -5,7 +5,7 @@ infisical:
 access:
   atlantis.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/SWE]
+    github_teams: [tloi-dalat/SRE]
   sqllab.tloi.vn:
     emails: 
       - minhquandinhcao@gmail.com
