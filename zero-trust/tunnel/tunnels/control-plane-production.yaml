@@ -6,10 +6,22 @@ access:
   atlantis.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SWE]
+  sqllab.tloi.vn:
+    emails: 
+      - minhquandinhcao@gmail.com
+      - ntson.1303@gmail.com
+    github_teams: [tloi-dalat/SRE]
+  argocd.tloi.vn:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 ingress:
   - hostname: argocd-hook.tloi.vn
     path: ^/api/webhook$
+    service: https://argocd-server.argocd.svc.cluster.local:443
+    origin_request:
+      no_tls_verify: true
+  - hostname: argocd.tloi.vn
     service: https://argocd-server.argocd.svc.cluster.local:443
     origin_request:
       no_tls_verify: true
@@ -31,3 +43,6 @@ ingress:
     service: http://online-judge-media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.vn
     service: http://online-judge-site.online-judge.svc.cluster.local:8000
+
+  - hostname: sqllab.tloi.vn
+    service: http://sqllab.platform.svc.cluster.local:3000
