@@ -16,6 +16,9 @@ access:
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 ingress:
+  - hostname: tloi.vn
+    service: http://landing-page-site.landing-page.svc.cluster.local:8080
+
   - hostname: argocd-hook.tloi.vn
     path: ^/api/webhook$
     service: https://argocd-server.argocd.svc.cluster.local:443
