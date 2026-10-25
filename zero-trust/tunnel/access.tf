@@ -37,8 +37,12 @@ resource "cloudflare_zero_trust_access_application" "this" {
   account_id       = var.cloudflare_account_id
   name             = each.key
   type             = "self_hosted"
-  domain           = each.key
+  domain           = length(try(each.value.paths, [])) > 0 ? null : each.key
   session_duration = "24h"
+
+  destinations = length(try(each.value.paths, [])) > 0 ? [
+    for p in each.value.paths : { type = "public", uri = "${each.key}${p}" }
+  ] : null
 
   policies = [{
     id         = cloudflare_zero_trust_access_policy.this[each.key].id
@@ -57,6 +61,10 @@ resource "cloudflare_zero_trust_access_application" "this" {
     precondition {
       condition     = alltrue([for t in try(each.value.github_teams, []) : can(regex("^[^/]+/[^/]+$", t))])
       error_message = "${each.key}: github_teams entries are <org>/<team>, e.g. tloi-dalat/sre."
+    }
+    precondition {
+      condition     = alltrue([for p in try(each.value.paths, []) : can(regex("^/[^*]*$", p))])
+      error_message = "${each.key}: paths start with / and have no wildcard, e.g. /admin."
     }
   }
 }

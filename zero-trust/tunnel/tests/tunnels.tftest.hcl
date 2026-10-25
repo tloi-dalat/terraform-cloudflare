@@ -55,10 +55,10 @@ run "access_hostnames_require_an_access_token" {
     condition = alltrue(flatten([
       for name, c in cloudflare_zero_trust_tunnel_cloudflared_config.this : [
         for rule in c.config.ingress : rule.origin_request.access.required && rule.origin_request.access.team_name == "tloi"
-        if try(contains(keys(local.access), rule.hostname), false)
+        if try(contains(local.access_whole_hosts, rule.hostname), false)
       ]
     ]))
-    error_message = "Every hostname with an Access application must require its token at the tunnel."
+    error_message = "Every hostname protected as a whole must require its Access token at the tunnel."
   }
 
   assert {
@@ -80,5 +80,28 @@ run "github_teams_become_organization_rules" {
       ]
     ]))
     error_message = "Every github_teams entry must become a github_organization include rule."
+  }
+}
+
+run "path_access_protects_only_those_paths" {
+  command = plan
+
+  assert {
+    condition = alltrue(flatten([
+      for host, a in local.access : [
+        for p in try(a.paths, []) : contains([for d in cloudflare_zero_trust_access_application.this[host].destinations : d.uri], "${host}${p}")
+      ] if length(try(a.paths, [])) > 0
+    ]))
+    error_message = "Every path under access.<hostname>.paths needs an Access destination."
+  }
+
+  assert {
+    condition = alltrue(flatten([
+      for name, c in cloudflare_zero_trust_tunnel_cloudflared_config.this : [
+        for rule in c.config.ingress : try(rule.origin_request.access, null) == null
+        if try(length(local.access[rule.hostname].paths) > 0, false)
+      ]
+    ]))
+    error_message = "A hostname protected only on some paths must stay reachable at the tunnel."
   }
 }

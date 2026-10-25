@@ -21,5 +21,7 @@ locals {
     }
   ]...)
 
+  access_whole_hosts = [for host, a in local.access : host if length(try(a.paths, [])) == 0]
+
   team_name = trimsuffix(data.cloudflare_zero_trust_organization.this.auth_domain, ".cloudflareaccess.com")
 }
