@@ -3,6 +3,9 @@ infisical:
   path: /cloudflared
 
 access:
+  tloi.shop:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
   oj.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
@@ -14,6 +17,9 @@ access:
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 ingress:
+  - hostname: tloi.shop
+    service: http://landing-page-site.landing-page.svc.cluster.local:8080
+
   - hostname: argocd-hook.tloi.shop
     path: ^/api/webhook$
     service: https://argocd-server.argocd.svc.cluster.local:443
