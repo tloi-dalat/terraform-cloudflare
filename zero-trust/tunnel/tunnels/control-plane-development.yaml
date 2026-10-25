@@ -18,7 +18,7 @@ access:
 
 ingress:
   - hostname: tloi.shop
-    service: http://landing-page-site.landing-page.svc.cluster.local:8080
+    service: http://site.landing-page.svc.cluster.local:8080
 
   - hostname: argocd-hook.tloi.shop
     path: ^/api/webhook$
@@ -32,15 +32,15 @@ ingress:
 
   - hostname: oj.tloi.shop
     path: ^/event/
-    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15100
+    service: http://event.online-judge.svc.cluster.local:15100
   - hostname: oj.tloi.shop
     path: ^/channels/
-    service: http://online-judge-wsevent.online-judge.svc.cluster.local:15102
+    service: http://event.online-judge.svc.cluster.local:15102
   - hostname: oj.tloi.shop
     path: ^/(martor|pdf|submission_file|static-upload)/
-    service: http://online-judge-media.online-judge.svc.cluster.local:8080
+    service: http://media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.shop
-    service: http://online-judge-site.online-judge.svc.cluster.local:8000
+    service: http://site.online-judge.svc.cluster.local:8000
 
   - hostname: sqllab.tloi.shop
     service: http://sqllab.platform.svc.cluster.local:3000
