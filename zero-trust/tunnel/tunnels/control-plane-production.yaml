@@ -3,11 +3,17 @@ infisical:
   path: /cloudflared
 
 access:
+  send.tloi.vn:
+    paths: [/admin, /api]
+    emails:
+      - minhquandinhcao@gmail.com
+      - ntson.1303@gmail.com
+    github_teams: [tloi-dalat/SRE]
   atlantis.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE]
   sqllab.tloi.vn:
-    emails: 
+    emails:
       - minhquandinhcao@gmail.com
       - ntson.1303@gmail.com
     github_teams: [tloi-dalat/SRE]
@@ -49,3 +55,6 @@ ingress:
 
   - hostname: sqllab.tloi.vn
     service: http://sqllab.platform.svc.cluster.local:3000
+
+  - hostname: send.tloi.vn
+    service: http://newsletter.platform.svc.cluster.local:9000

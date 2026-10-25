@@ -37,6 +37,16 @@ PIN, or any login method enabled in Zero Trust → Settings → Authentication).
 `origin_request.access`, so the tunnel drops requests without a valid Access token for that application. The
 hostname needs at least one ingress rule in the same file.
 
+To protect only some paths (an app with public pages), list them; the rest of the hostname stays public and the
+tunnel doesn't check tokens for it:
+
+```yaml
+access:
+  send.tloi.vn:
+    paths: [/admin, /api]
+    github_teams: [tloi-dalat/SRE]
+```
+
 ## Add a hostname
 
 Add its rules, open a PR, comment `atlantis plan`, get an `sre` approval, comment `atlantis apply`. The route goes live
