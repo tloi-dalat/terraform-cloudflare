@@ -9,6 +9,11 @@ access:
       - minhquandinhcao@gmail.com
       - ntson.1303@gmail.com
     github_teams: [tloi-dalat/SRE]
+  link-admin.tloi.vn:
+    emails:
+      - minhquandinhcao@gmail.com
+      - ntson.1303@gmail.com
+    github_teams: [tloi-dalat/SRE]
   atlantis.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE]
@@ -58,3 +63,14 @@ ingress:
 
   - hostname: send.tloi.vn
     service: http://newsletter.platform.svc.cluster.local:9000
+
+  - hostname: link.tloi.vn
+    path: ^/rest/
+    service: http_status:404
+  - hostname: link.tloi.vn
+    service: http://url-shortener.platform.svc.cluster.local:8080
+  - hostname: link-admin.tloi.vn
+    path: ^/rest/
+    service: http://url-shortener.platform.svc.cluster.local:8080
+  - hostname: link-admin.tloi.vn
+    service: http://url-shortener-admin.platform.svc.cluster.local:8080
