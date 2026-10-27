@@ -1,0 +1,53 @@
+auth: |-
+  http.request.uri.path eq "/accounts/login/" or
+  http.request.uri.path eq "/accounts/2fa/" or
+  http.request.uri.path wildcard "/accounts/register/*" or
+  http.request.uri.path wildcard "/accounts/password/reset/*" or
+  http.request.uri.path wildcard "/admin/*"
+
+content: |-
+  http.request.uri.path wildcard "/problem/*/submit" or
+  http.request.uri.path wildcard "/problem/*/resubmit/*" or
+  http.request.uri.path wildcard "/problem/*/tickets/new" or
+  http.request.uri.path wildcard "/post/*/edit" or
+  http.request.uri.path wildcard "/post/*/delete" or
+  http.request.uri.path wildcard "/comments/*/edit" or
+  http.request.uri.path wildcard "/organization/*/request" or
+  http.request.uri.path wildcard "/organization/*/post/new" or
+  http.request.uri.path in {
+    "/posts/new"
+    "/tickets/new"
+    "/organizations/create"
+    "/accounts/password/change/"
+    "/accounts/2fa/enable/"
+    "/accounts/2fa/refresh/"
+    "/accounts/2fa/disable/"
+  }
+
+under_attack_skip: |-
+  starts_with(http.request.uri.path, "/event/") or
+  starts_with(http.request.uri.path, "/channels/") or
+  starts_with(http.request.uri.path, "/api/") or
+  starts_with(http.request.uri.path, "/static/")
+
+ratelimit: |-
+  http.request.uri.path in {
+    "/comments/upvote"
+    "/comments/downvote"
+    "/comments/hide"
+    "/posts/upvote"
+    "/posts/downvote"
+    "/widgets/rejudge"
+    "/widgets/martor/upload-image"
+    "/accounts/api/token/generate/"
+    "/accounts/api/token/remove/"
+    "/accounts/2fa/scratchcode/generate/"
+  } or
+  http.request.uri.path wildcard "/accounts/2fa/webauthn/*" or
+  http.request.uri.path wildcard "/ticket/*/open" or
+  http.request.uri.path wildcard "/ticket/*/close" or
+  http.request.uri.path wildcard "/ticket/*/good" or
+  http.request.uri.path wildcard "/ticket/*/norm" or
+  http.request.uri.path wildcard "/ticket/*/notes" or
+  http.request.uri.path wildcard "/organization/*/join" or
+  http.request.uri.path wildcard "/organization/*/leave"

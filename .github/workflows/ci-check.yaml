@@ -14,5 +14,5 @@ jobs:
       contents: read
     uses: tloi-dalat/reusable-workflow/.github/workflows/terraform-check.yaml@main
     with:
-      workspaces: '["zero-trust/tunnel"]'
+      workspaces: '["zero-trust/tunnel", "security"]'
       terraform-version: 1.16.5

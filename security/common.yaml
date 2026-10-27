@@ -1,0 +1,20 @@
+scanners: |-
+  http.request.uri.path wildcard "*.php" or
+  http.request.uri.path wildcard "*.asp" or
+  http.request.uri.path wildcard "*.aspx" or
+  http.request.uri.path wildcard "*.jsp" or
+  http.request.uri.path wildcard "*.cgi" or
+  http.request.uri.path wildcard "/wp-*" or
+  http.request.uri.path wildcard "/.env*" or
+  http.request.uri.path wildcard "*/.git*" or
+  http.request.uri.path wildcard "/.aws/*" or
+  http.request.uri.path wildcard "/.ssh/*" or
+  http.request.uri.path wildcard "/phpmyadmin*" or
+  http.request.uri.path wildcard "/cgi-bin/*" or
+  http.request.uri.path wildcard "/actuator*" or
+  http.request.uri.path wildcard "/server-status*"
+
+ratelimit:
+  period: 10
+  mitigation_timeout: 10
+  requests_per_period: 20

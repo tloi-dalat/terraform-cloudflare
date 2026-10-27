@@ -1,0 +1,3 @@
+security_level: medium
+browser_check: "on"
+challenge_ttl: 86400

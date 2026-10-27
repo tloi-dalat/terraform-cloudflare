@@ -1,0 +1,9 @@
+tloi.shop:
+  under_attack: false
+  apps:
+    online-judge: oj.tloi.shop
+
+tloi.vn:
+  under_attack: false
+  apps:
+    online-judge: oj.tloi.vn
