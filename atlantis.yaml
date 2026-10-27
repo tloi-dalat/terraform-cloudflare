@@ -6,3 +6,8 @@ projects:
     terraform_version: v1.16.5
     autoplan:
       when_modified: ["*.tf", ".terraform.lock.hcl", "tunnels/*.yaml", "tests/*.hcl"]
+  - name: security
+    dir: security
+    terraform_version: v1.16.5
+    autoplan:
+      when_modified: ["*.tf", "*.yaml", "apps/*.yaml", ".terraform.lock.hcl", "tests/*.hcl"]
