@@ -25,6 +25,12 @@ access:
   argocd.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
+  monitor.tloi.vn:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
+  alert.tloi.vn:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE]
 
 ingress:
   - hostname: tloi.vn
@@ -74,3 +80,14 @@ ingress:
     service: http://url-shortener.platform.svc.cluster.local:8080
   - hostname: link-admin.tloi.vn
     service: http://url-shortener-admin.platform.svc.cluster.local:8080
+
+  - hostname: monitor.tloi.vn
+    path: ^/-/(quit|reload)$
+    service: http_status:404
+  - hostname: monitor.tloi.vn
+    service: http://prometheus.monitoring.svc.cluster.local:9090
+  - hostname: alert.tloi.vn
+    path: ^/-/(quit|reload)$
+    service: http_status:404
+  - hostname: alert.tloi.vn
+    service: http://alertmanager.monitoring.svc.cluster.local:9093
