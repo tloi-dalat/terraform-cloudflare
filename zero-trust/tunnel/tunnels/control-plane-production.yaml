@@ -92,5 +92,5 @@ ingress:
   - hostname: alert.tloi.vn
     service: http://alertmanager.monitoring.svc.cluster.local:9093
 
-  - hostname: ai.tloi.vn
+  - hostname: litellm.tloi.vn
     service: http://gateway.ai.svc.cluster.local:4000
