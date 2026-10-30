@@ -5,10 +5,10 @@ infisical:
 access:
   tloi.shop:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
   oj.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
-    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
   sqllab.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
