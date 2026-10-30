@@ -12,6 +12,16 @@ resource "cloudflare_zero_trust_access_identity_provider" "github" {
   }
 }
 
+resource "cloudflare_zero_trust_access_identity_provider" "google" {
+  account_id = var.cloudflare_account_id
+  name       = "Google"
+  type       = "google"
+  config = {
+    client_id     = var.google_client_id
+    client_secret = var.google_client_secret
+  }
+}
+
 resource "cloudflare_zero_trust_access_policy" "this" {
   for_each = local.access
 

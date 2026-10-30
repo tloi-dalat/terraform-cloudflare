@@ -27,8 +27,10 @@ mock_provider "infisical" {}
 variables {
   cloudflare_account_id = "mock-account"
   infisical_project_id  = "mock-project"
-  github_client_id      = "mock-client"
-  github_client_secret  = "mock-secret"
+  github_client_id      = "mock-github-client"
+  github_client_secret  = "mock-github-secret"
+  google_client_id      = "mock-google-client"
+  google_client_secret  = "mock-google-secret"
 }
 
 run "every_tunnel_file_plans" {
