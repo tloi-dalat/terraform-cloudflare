@@ -47,6 +47,14 @@ resource "cloudflare_ruleset" "ratelimit" {
   ]
 }
 
+resource "cloudflare_workers_route" "maintenance" {
+  for_each = local.maintenance_routes
+
+  zone_id = data.cloudflare_zone.this[each.value.zone].id
+  pattern = "${each.key}/*"
+  script  = each.value.script
+}
+
 resource "cloudflare_zone_setting" "this" {
   for_each = local.zone_settings
 
@@ -59,6 +67,13 @@ check "known_apps" {
   assert {
     condition     = alltrue(flatten([for zone, z in local.zones : [for app in keys(z.apps) : contains(keys(local.apps), app)]]))
     error_message = "Every app in zones.yaml needs a file in apps/."
+  }
+}
+
+check "known_environments" {
+  assert {
+    condition     = alltrue([for zone, z in local.zones : contains(["development", "production"], try(z.environment, ""))])
+    error_message = "Every zone in zones.yaml needs environment: development or production."
   }
 }
 

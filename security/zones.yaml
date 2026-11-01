@@ -1,9 +1,13 @@
 tloi.shop:
+  environment: development
   under_attack: false
+  maintenance: false
   apps:
     online-judge: oj.tloi.shop
 
 tloi.vn:
+  environment: production
   under_attack: false
+  maintenance: false
   apps:
     online-judge: oj.tloi.vn

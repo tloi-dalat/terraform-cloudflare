@@ -7,7 +7,9 @@ apps a zone has, it always uses the same 4 custom rules and 1 rate limiting rule
 ```yaml
 # zones.yaml
 tloi.vn:
+  environment: production
   under_attack: false
+  maintenance: false
   apps:
     online-judge: oj.tloi.vn
 ```
@@ -41,3 +43,10 @@ Add `apps/<app>.yaml` with its parts, then list it with its host under each zone
 ## Turn on "Under attack"
 
 Set `under_attack: true` on the zone, plan and apply. Turn it off again the same way.
+
+## Turn on maintenance
+
+Set `maintenance: true` on the zone, plan and apply. Every host of the zone's apps then goes through the Worker
+`maintenance-page-<environment>` (repo `maintenance-page`): everyone gets the maintenance page with a `503`, and
+people allowed by the Access app at `<host>/maintenance` (in `zero-trust/tunnel/tunnels/`) log in there and use the
+site as usual. Set it back to `false` when done. The Atlantis token needs Workers Routes: Edit on the zone.
