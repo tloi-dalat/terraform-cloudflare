@@ -23,26 +23,26 @@ locals {
 
   access_whole_hosts = [for host, a in local.access : host if length(try(a.paths, [])) == 0]
 
-  maintenance_routes = merge([
+  maintenance = merge([
     for tunnel, cfg in local.tunnels : {
-      for host in try(cfg.maintenance.hosts, []) : host => {
+      for host, m in try(cfg.maintenance, {}) : host => merge(m, {
         tunnel = tunnel
         script = "maintenance-page-${cfg.infisical.environment}"
-      }
+      })
     }
   ]...)
 
-  maintenance_access = {
-    for tunnel, cfg in local.tunnels : tunnel => cfg.maintenance
-    if length(try(cfg.maintenance.emails, [])) + length(try(cfg.maintenance.github_teams, [])) > 0
-  }
+  maintenance_access = { for host, m in local.maintenance : host => m if !contains(local.access_whole_hosts, host) }
 
-  maintenance_destinations = {
-    for tunnel in keys(local.maintenance_access) : tunnel => [
-      for h in local.hostname_list : "${h.hostname}/maintenance"
-      if h.tunnel == tunnel && !contains(local.access_whole_hosts, h.hostname)
-    ]
-  }
+  maintenance_routes = merge([
+    for host, m in local.maintenance : {
+      for pattern in(
+        length(try(m.paths, [])) == 0
+        ? ["${host}/*"]
+        : concat(flatten([for p in m.paths : ["${host}${p}", "${host}${p}/*"]]), ["${host}/maintenance", "${host}/_maintenance/*"])
+      ) : pattern => { host = host, script = m.script }
+    } if try(m.enabled, false) == true
+  ]...)
 
   team_name = trimsuffix(data.cloudflare_zero_trust_organization.this.auth_domain, ".cloudflareaccess.com")
 }
