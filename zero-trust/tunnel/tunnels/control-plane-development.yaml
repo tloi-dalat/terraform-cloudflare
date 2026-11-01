@@ -19,6 +19,9 @@ access:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
+maintenance:
+  hosts: []
+
 ingress:
   - hostname: tloi.shop
     service: http://site.landing-page.svc.cluster.local:8080

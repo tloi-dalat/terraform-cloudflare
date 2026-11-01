@@ -7,9 +7,7 @@ apps a zone has, it always uses the same 4 custom rules and 1 rate limiting rule
 ```yaml
 # zones.yaml
 tloi.vn:
-  environment: production
   under_attack: false
-  maintenance: []
   apps:
     online-judge: oj.tloi.vn
 ```
@@ -43,16 +41,3 @@ Add `apps/<app>.yaml` with its parts, then list it with its host under each zone
 ## Turn on "Under attack"
 
 Set `under_attack: true` on the zone, plan and apply. Turn it off again the same way.
-
-## Turn on maintenance
-
-List the apps under the zone's `maintenance`, e.g. `maintenance: [online-judge]`, plan and apply. Their hosts then
-go through the Worker `maintenance-page-<environment>` (repo `maintenance-page`): everyone gets the maintenance page
-with a `503`, and people allowed in `maintenance.yaml` log in at `<host>/maintenance` and use the site as usual.
-Other apps of the zone stay up. Set it back to `[]` when done.
-
-`maintenance.yaml` lists who gets past the page, per environment. Each environment there gets one Access app,
-`maintenance-<environment>`, covering `<host>/maintenance` of every app in its zones, so a new app in `zones.yaml` is
-covered without more work. Development needs none: its hosts are already behind Access. The Worker checks tokens
-against the outputs `access_team_domain` and `maintenance_access_aud` (`TEAM_DOMAIN` and `ACCESS_AUD` in the
-maintenance-page `wrangler.jsonc`).

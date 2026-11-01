@@ -47,6 +47,25 @@ access:
     github_teams: [tloi-dalat/SRE]
 ```
 
+## Maintenance
+
+```yaml
+maintenance:
+  hosts: [oj.tloi.vn]
+  emails: [someone@example.com]
+  github_teams: [tloi-dalat/SRE]
+```
+
+A hostname under `maintenance.hosts` goes through the Worker `maintenance-page-<infisical.environment>` (repo
+`maintenance-page`): everyone gets the maintenance page with a `503`, and the people under `maintenance` log in at
+`<hostname>/maintenance` and use the site as usual. Set `hosts: []` when done. The Atlantis token needs Workers
+Routes: Edit on the zones.
+
+With emails or teams, the tunnel gets one Access app, `maintenance-<tunnel>`, covering `<hostname>/maintenance` of
+every hostname of the tunnel not already behind Access, so a new hostname is covered without more work.
+Development lists none: its hosts are already behind Access. The outputs `access_team_domain` and
+`maintenance_access_aud` are `TEAM_DOMAIN` and `ACCESS_AUD` of the maintenance-page `wrangler.jsonc`.
+
 ## Add a hostname
 
 Add its rules, open a PR, comment `atlantis plan`, get an `sre` approval, comment `atlantis apply`. The route goes live

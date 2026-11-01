@@ -107,3 +107,39 @@ run "path_access_protects_only_those_paths" {
     error_message = "A hostname protected only on some paths must stay reachable at the tunnel."
   }
 }
+
+run "maintenance_access_covers_every_public_hostname_of_its_tunnel" {
+  command = plan
+
+  assert {
+    condition = alltrue([
+      for h in local.hostname_list : contains(
+        [for d in cloudflare_zero_trust_access_application.maintenance[h.tunnel].destinations : d.uri],
+        "${h.hostname}/maintenance"
+      ) if contains(keys(local.maintenance_access), h.tunnel) && !contains(local.access_whole_hosts, h.hostname)
+    ])
+    error_message = "Every hostname not behind Access needs <hostname>/maintenance in the maintenance Access app of its tunnel."
+  }
+
+  assert {
+    condition     = !contains(keys(local.maintenance_access), "control-plane-development")
+    error_message = "Development hosts are already behind Access, so they need no maintenance Access app."
+  }
+}
+
+run "maintenance_hosts_route_to_the_worker_of_their_environment" {
+  command = plan
+
+  assert {
+    condition = alltrue([
+      for host, r in cloudflare_workers_route.maintenance :
+      r.pattern == "${host}/*" && r.script == "maintenance-page-${local.tunnels[local.hostnames[host].tunnel].infisical.environment}"
+    ])
+    error_message = "A host under maintenance.hosts should route to maintenance-page-<environment>."
+  }
+
+  assert {
+    condition     = length(cloudflare_workers_route.maintenance) == length(flatten([for t, cfg in local.tunnels : try(cfg.maintenance.hosts, [])]))
+    error_message = "Only hosts under maintenance.hosts should get a Worker route."
+  }
+}

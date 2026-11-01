@@ -32,6 +32,11 @@ access:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE]
 
+maintenance:
+  hosts: []
+  emails: [minhquandinhcao@gmail.com]
+  github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
+
 ingress:
   - hostname: tloi.vn
     service: http://site.landing-page.svc.cluster.local:8080

@@ -3,8 +3,6 @@ locals {
   common   = yamldecode(file("${path.module}/common.yaml"))
   settings = yamldecode(file("${path.module}/settings.yaml"))
 
-  maintenance_access = yamldecode(file("${path.module}/maintenance.yaml"))
-
   apps = {
     for f in fileset("${path.module}/apps", "*.yaml") :
     trimsuffix(f, ".yaml") => yamldecode(file("${path.module}/apps/${f}"))
@@ -70,25 +68,6 @@ locals {
       } if expression != ""
     ]
   }
-
-  maintenance_routes = merge([
-    for zone, z in local.zones : {
-      for app in try(z.maintenance, []) : z.apps[app] => {
-        zone   = zone
-        script = "maintenance-page-${z.environment}"
-      } if contains(keys(z.apps), app)
-    }
-  ]...)
-
-  maintenance_destinations = {
-    for env in keys(local.maintenance_access) : env => flatten([
-      for zone, z in local.zones : [for app, host in z.apps : "${host}/maintenance"] if z.environment == env
-    ])
-  }
-
-  account_id = one(distinct([for z in data.cloudflare_zone.this : z.account.id]))
-
-  github_idp = one([for p in data.cloudflare_zero_trust_access_identity_providers.this.result : p.id if p.type == "github"])
 
   zone_settings = merge([
     for zone in keys(local.zones) : {

@@ -1,15 +1,11 @@
 tloi.shop:
-  environment: development
   under_attack: false
-  maintenance: []
   apps:
     landing-page: tloi.shop
     online-judge: oj.tloi.shop
 
 tloi.vn:
-  environment: production
   under_attack: false
-  maintenance: []
   apps:
     landing-page: tloi.vn
     online-judge: oj.tloi.vn
