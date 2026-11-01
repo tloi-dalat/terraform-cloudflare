@@ -27,3 +27,17 @@ run "every_zone_plans" {
     error_message = "The Free plan only allows a 10s period and a 10s mitigation timeout."
   }
 }
+
+run "maintenance_off_has_no_routes" {
+  command = plan
+
+  assert {
+    condition     = length(cloudflare_workers_route.maintenance) == length(flatten([for zone, z in local.zones : keys(z.apps) if try(z.maintenance, false)]))
+    error_message = "Only hosts of zones with maintenance: true should get a Worker route."
+  }
+
+  assert {
+    condition     = alltrue([for host, r in local.maintenance_routes : r.script == "maintenance-page-${local.zones[r.zone].environment}"])
+    error_message = "A zone's hosts should route to the Worker of its environment."
+  }
+}
