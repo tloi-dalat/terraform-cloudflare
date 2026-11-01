@@ -51,19 +51,22 @@ access:
 
 ```yaml
 maintenance:
-  hosts: [oj.tloi.vn]
-  emails: [someone@example.com]
-  github_teams: [tloi-dalat/SRE]
+  oj.tloi.vn:
+    enabled: false
+    paths: [/problem]
+    emails: [someone@example.com]
+    github_teams: [tloi-dalat/SRE]
 ```
 
-A hostname under `maintenance.hosts` goes through the Worker `maintenance-page-<infisical.environment>` (repo
-`maintenance-page`): everyone gets the maintenance page with a `503`, and the people under `maintenance` log in at
-`<hostname>/maintenance` and use the site as usual. Set `hosts: []` when done. The Atlantis token needs Workers
-Routes: Edit on the zones.
+A hostname under `maintenance:` with `enabled: true` goes through the Worker `maintenance-page-<infisical.environment>`
+(repo `maintenance-page`): everyone gets the maintenance page with a `503`, on the whole hostname or only under
+`paths`. The people listed log in at `<hostname>/maintenance` and use the site as usual. Set `enabled: false` when
+done. YAML anchors (`&name`, `*name`) avoid repeating the same people.
 
-With emails or teams, the tunnel gets one Access app, `maintenance-<tunnel>`, covering `<hostname>/maintenance` of
-every hostname of the tunnel not already behind Access, so a new hostname is covered without more work.
-Development lists none: its hosts are already behind Access.
+A hostname not behind Access gets its own Access app at `<hostname>/maintenance` for those people. One already
+behind Access (all of development) lists no people: its own Access app decides. Terraform writes each hostname's
+Access team domain and AUD to the KV namespace `maintenance-page` (output `maintenance_kv_namespace_id`), where the
+Worker reads them. The Atlantis token needs Workers Routes: Edit on the zones and Workers KV Storage: Edit.
 
 ## Add a hostname
 

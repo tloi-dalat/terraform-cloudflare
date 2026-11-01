@@ -108,38 +108,37 @@ run "path_access_protects_only_those_paths" {
   }
 }
 
-run "maintenance_access_covers_every_public_hostname_of_its_tunnel" {
+run "maintenance_hosts_get_their_access_settings" {
   command = plan
 
   assert {
-    condition = alltrue([
-      for h in local.hostname_list : contains(
-        [for d in cloudflare_zero_trust_access_application.maintenance[h.tunnel].destinations : d.uri],
-        "${h.hostname}/maintenance"
-      ) if contains(keys(local.maintenance_access), h.tunnel) && !contains(local.access_whole_hosts, h.hostname)
-    ])
-    error_message = "Every hostname not behind Access needs <hostname>/maintenance in the maintenance Access app of its tunnel."
+    condition     = length(cloudflare_workers_kv.maintenance) == length(local.maintenance)
+    error_message = "Every host under maintenance needs a KV entry for the Worker."
   }
 
   assert {
-    condition     = !contains(keys(local.maintenance_access), "control-plane-development")
-    error_message = "Development hosts are already behind Access, so they need no maintenance Access app."
+    condition = alltrue([
+      for host, m in local.maintenance : contains([for d in cloudflare_zero_trust_access_application.maintenance[host].destinations : d.uri], "${host}/maintenance")
+      if !contains(local.access_whole_hosts, host)
+    ])
+    error_message = "A host not behind Access needs its own Access app at <host>/maintenance."
+  }
+
+  assert {
+    condition     = alltrue([for host in keys(local.maintenance_access) : !contains(local.access_whole_hosts, host)])
+    error_message = "A host already behind Access needs no maintenance Access app."
   }
 }
 
-run "maintenance_hosts_route_to_the_worker_of_their_environment" {
+run "maintenance_routes_only_enabled_hosts" {
   command = plan
 
   assert {
     condition = alltrue([
-      for host, r in cloudflare_workers_route.maintenance :
-      r.pattern == "${host}/*" && r.script == "maintenance-page-${local.tunnels[local.hostnames[host].tunnel].infisical.environment}"
+      for pattern, r in cloudflare_workers_route.maintenance :
+      local.maintenance[local.maintenance_routes[pattern].host].enabled == true &&
+      r.script == "maintenance-page-${local.tunnels[local.maintenance[local.maintenance_routes[pattern].host].tunnel].infisical.environment}"
     ])
-    error_message = "A host under maintenance.hosts should route to maintenance-page-<environment>."
-  }
-
-  assert {
-    condition     = length(cloudflare_workers_route.maintenance) == length(flatten([for t, cfg in local.tunnels : try(cfg.maintenance.hosts, [])]))
-    error_message = "Only hosts under maintenance.hosts should get a Worker route."
+    error_message = "Only enabled hosts get Worker routes, to maintenance-page-<environment>."
   }
 }

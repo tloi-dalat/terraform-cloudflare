@@ -20,7 +20,10 @@ access:
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 maintenance:
-  hosts: []
+  tloi.shop:
+    enabled: false
+  oj.tloi.shop:
+    enabled: false
 
 ingress:
   - hostname: tloi.shop
