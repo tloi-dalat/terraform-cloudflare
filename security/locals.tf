@@ -69,15 +69,6 @@ locals {
     ]
   }
 
-  maintenance_routes = merge([
-    for zone, z in local.zones : {
-      for app in try(z.maintenance, []) : z.apps[app] => {
-        zone   = zone
-        script = "maintenance-page-${z.environment}"
-      } if contains(keys(z.apps), app)
-    }
-  ]...)
-
   zone_settings = merge([
     for zone in keys(local.zones) : {
       for id, value in local.settings : "${zone}/${id}" => { zone = zone, id = id, value = value }
