@@ -70,6 +70,13 @@ check "known_apps" {
   }
 }
 
+check "known_maintenance_apps" {
+  assert {
+    condition     = alltrue(flatten([for zone, z in local.zones : [for app in try(z.maintenance, []) : contains(keys(z.apps), app)]]))
+    error_message = "Every app in a zone's maintenance list must be one of its apps."
+  }
+}
+
 check "known_environments" {
   assert {
     condition     = alltrue([for zone, z in local.zones : contains(["development", "production"], try(z.environment, ""))])

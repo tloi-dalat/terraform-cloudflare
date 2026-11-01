@@ -28,16 +28,19 @@ run "every_zone_plans" {
   }
 }
 
-run "maintenance_off_has_no_routes" {
+run "maintenance_routes_only_listed_apps" {
   command = plan
 
   assert {
-    condition     = length(cloudflare_workers_route.maintenance) == length(flatten([for zone, z in local.zones : keys(z.apps) if try(z.maintenance, false)]))
-    error_message = "Only hosts of zones with maintenance: true should get a Worker route."
+    condition = (
+      length(cloudflare_workers_route.maintenance) == length(flatten([for zone, z in local.zones : try(z.maintenance, [])])) &&
+      alltrue(flatten([for zone, z in local.zones : [for app in try(z.maintenance, []) : contains(keys(cloudflare_workers_route.maintenance), z.apps[app])]]))
+    )
+    error_message = "Only hosts of the apps in a zone's maintenance list should get a Worker route."
   }
 
   assert {
     condition     = alltrue([for host, r in local.maintenance_routes : r.script == "maintenance-page-${local.zones[r.zone].environment}"])
-    error_message = "A zone's hosts should route to the Worker of its environment."
+    error_message = "A host should route to the Worker of its zone's environment."
   }
 }
