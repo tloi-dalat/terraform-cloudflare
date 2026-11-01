@@ -8,7 +8,7 @@ output "hostnames" {
   value       = { for host, h in local.hostnames : host => h.tunnel }
 }
 
-output "access_team_domain" {
+output "maintenance_access_team_domain" {
   description = "Issuer of Access tokens, TEAM_DOMAIN of the maintenance Worker"
   value       = "https://${data.cloudflare_zero_trust_organization.this.auth_domain}"
 }

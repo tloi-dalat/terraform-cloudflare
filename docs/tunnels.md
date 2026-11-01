@@ -63,7 +63,7 @@ Routes: Edit on the zones.
 
 With emails or teams, the tunnel gets one Access app, `maintenance-<tunnel>`, covering `<hostname>/maintenance` of
 every hostname of the tunnel not already behind Access, so a new hostname is covered without more work.
-Development lists none: its hosts are already behind Access. The outputs `access_team_domain` and
+Development lists none: its hosts are already behind Access. The outputs `maintenance_access_team_domain` and
 `maintenance_access_aud` are `TEAM_DOMAIN` and `ACCESS_AUD` of the maintenance-page `wrangler.jsonc`.
 
 ## Add a hostname
