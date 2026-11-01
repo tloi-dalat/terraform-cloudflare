@@ -82,6 +82,11 @@ check "known_environments" {
     condition     = alltrue([for zone, z in local.zones : contains(["development", "production"], try(z.environment, ""))])
     error_message = "Every zone in zones.yaml needs environment: development or production."
   }
+
+  assert {
+    condition     = alltrue([for env in keys(local.maintenance_access) : contains(["development", "production"], env)])
+    error_message = "Every environment in maintenance.yaml must be development or production."
+  }
 }
 
 check "expression_length" {
