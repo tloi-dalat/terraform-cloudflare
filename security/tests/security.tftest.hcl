@@ -2,11 +2,22 @@ mock_provider "cloudflare" {
   mock_data "cloudflare_zone" {
     defaults = {
       id      = "0123456789abcdef0123456789abcdef"
-      account = { id = "mock-account" }
+      account = { id = "mock-account", name = "mock" }
     }
   }
   mock_data "cloudflare_zero_trust_access_identity_providers" {
-    defaults = { result = [{ id = "mock-github", name = "GitHub", type = "github" }] }
+    defaults = {
+      result = [{
+        id                      = "mock-github"
+        name                    = "GitHub"
+        type                    = "github"
+        config                  = null
+        read_only               = false
+        saml_certificate_set    = null
+        saml_certificate_set_id = null
+        scim_config             = null
+      }]
+    }
   }
   mock_data "cloudflare_zero_trust_organization" {
     defaults = { auth_domain = "tloi.cloudflareaccess.com" }
