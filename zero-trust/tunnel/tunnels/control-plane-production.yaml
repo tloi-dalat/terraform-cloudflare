@@ -34,7 +34,7 @@ access:
 
 maintenance:
   tloi.vn:
-    enabled: true
+    enabled: false
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
   oj.tloi.vn:
