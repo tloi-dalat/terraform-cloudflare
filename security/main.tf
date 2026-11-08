@@ -22,6 +22,13 @@ resource "cloudflare_ruleset" "custom" {
       enabled     = r.enabled
     }
   ]
+
+  lifecycle {
+    precondition {
+      condition     = length(each.value) <= 5
+      error_message = "${each.key}: the Free plan allows 5 custom rules per zone, got ${length(each.value)}."
+    }
+  }
 }
 
 resource "cloudflare_ruleset" "ratelimit" {
@@ -45,6 +52,17 @@ resource "cloudflare_ruleset" "ratelimit" {
       }
     }
   ]
+
+  lifecycle {
+    precondition {
+      condition     = length(each.value) <= 1
+      error_message = "${each.key}: the Free plan allows 1 rate limiting rule per zone, got ${length(each.value)}."
+    }
+    precondition {
+      condition     = alltrue([for r in each.value : r.period == 10 && r.mitigation_timeout == 10])
+      error_message = "${each.key}: the Free plan only allows a 10s period and a 10s mitigation timeout."
+    }
+  }
 }
 
 resource "cloudflare_zone_setting" "this" {
