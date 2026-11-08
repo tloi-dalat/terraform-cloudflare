@@ -18,7 +18,7 @@ access:
   argocd.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
-  db.tloi.shop:
+  mariadb.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
@@ -57,5 +57,5 @@ ingress:
   - hostname: sqllab.tloi.shop
     service: http://sqllab.platform.svc.cluster.local:3000
 
-  - hostname: db.tloi.shop
+  - hostname: mariadb.tloi.shop
     service: tcp://mariadb-primary.database.svc.cluster.local:3306
