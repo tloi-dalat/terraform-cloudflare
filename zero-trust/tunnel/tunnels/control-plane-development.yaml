@@ -21,6 +21,9 @@ access:
   mariadb.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
+  postgres.tloi.shop:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
 
 maintenance:
   tloi.shop:
@@ -59,3 +62,6 @@ ingress:
 
   - hostname: mariadb.tloi.shop
     service: tcp://mariadb-primary.database.svc.cluster.local:3306
+
+  - hostname: postgres.tloi.shop
+    service: tcp://postgres-primary.database.svc.cluster.local:5432
