@@ -12,6 +12,9 @@ access:
       - lagiahuy.dl@gmail.com
       - vogiaminhdl@gmail.com
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
+  oq.tloi.shop:
+    emails: [minhquandinhcao@gmail.com]
+    github_teams: [tloi-dalat/SRE, tloi-dalat/SWE, tloi-dalat/QAE]
   sqllab.tloi.shop:
     emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE, tloi-dalat/SWE]
@@ -56,6 +59,9 @@ ingress:
     service: http://media.online-judge.svc.cluster.local:8080
   - hostname: oj.tloi.shop
     service: http://site.online-judge.svc.cluster.local:8000
+
+  - hostname: oq.tloi.shop
+    service: http://site.online-quiz.svc.cluster.local:8000
 
   - hostname: sqllab.tloi.shop
     service: http://sqllab.platform.svc.cluster.local:3000
