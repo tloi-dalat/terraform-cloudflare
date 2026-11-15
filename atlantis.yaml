@@ -11,3 +11,8 @@ projects:
     terraform_version: v1.16.5
     autoplan:
       when_modified: ["*.tf", "*.yaml", "apps/*.yaml", ".terraform.lock.hcl"]
+  - name: storage
+    dir: storage
+    terraform_version: v1.16.5
+    autoplan:
+      when_modified: ["*.tf", "*.yaml", ".terraform.lock.hcl"]

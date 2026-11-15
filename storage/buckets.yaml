@@ -1,0 +1,9 @@
+tloi-shop-assets:
+  location: apac
+  domains: [assets.tloi.shop]
+  cors_origins: [https://tloi.shop]
+
+tloi-vn-assets:
+  location: apac
+  domains: [assets.tloi.vn]
+  cors_origins: [https://tloi.vn]
