@@ -23,9 +23,7 @@ access:
       - ntson.1303@gmail.com
     github_teams: [tloi-dalat/SRE]
   sqllab-admin.tloi.vn:
-    emails:
-      - minhquandinhcao@gmail.com
-      - ntson.1303@gmail.com
+    emails: [minhquandinhcao@gmail.com]
     github_teams: [tloi-dalat/SRE]
   argocd.tloi.vn:
     emails: [minhquandinhcao@gmail.com]
